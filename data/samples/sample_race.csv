@@ -1,0 +1,5 @@
+session_id,driver,lap_number,lap_time_s,sector1_s,sector2_s,sector3_s,compound,tyre_age_laps
+2026-monza-race,VER,1,84.231,27.102,31.044,26.085,MEDIUM,1
+2026-monza-race,VER,2,84.510,27.190,31.102,26.218,MEDIUM,2
+2026-monza-race,NOR,1,84.402,27.155,31.120,26.127,HARD,1
+2026-monza-race,NOR,2,84.355,27.140,31.095,26.120,HARD,2
