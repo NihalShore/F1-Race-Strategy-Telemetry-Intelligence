@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+backend/__init__.py
+backend/ingestion/__init__.py
+backend/ingestion/csv_loader.py
+backend/ingestion/validation.py
+backend/schemas/__init__.py
+backend/schemas/race.py
+f1_race_strategy_telemetry.egg-info/PKG-INFO
+f1_race_strategy_telemetry.egg-info/SOURCES.txt
+f1_race_strategy_telemetry.egg-info/dependency_links.txt
+f1_race_strategy_telemetry.egg-info/requires.txt
+f1_race_strategy_telemetry.egg-info/top_level.txt
+tests/test_csv_loader.py
+tests/test_validation.py

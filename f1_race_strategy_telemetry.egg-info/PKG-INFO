@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: f1-race-strategy-telemetry
+Version: 0.1.0
+Summary: Race data ingestion and strategy analysis tools
+Requires-Python: >=3.10
+License-File: LICENSE
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Dynamic: license-file

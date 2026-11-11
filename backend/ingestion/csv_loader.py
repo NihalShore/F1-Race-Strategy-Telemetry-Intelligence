@@ -12,6 +12,9 @@ def load_laps_csv(path: str | Path) -> list[LapRecord]:
         if reader.fieldnames is None:
             raise CsvValidationError(["CSV file is empty or has no header"])
 
+        normalized_fieldnames = [field.strip() if field is not None else field for field in reader.fieldnames]
+        reader.fieldnames = normalized_fieldnames
+
         missing = sorted(REQUIRED_COLUMNS - set(reader.fieldnames))
         if missing:
             raise CsvValidationError([f"missing required columns: {', '.join(missing)}"])
