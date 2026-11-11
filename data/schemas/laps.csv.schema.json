@@ -1,0 +1,24 @@
+{
+  "description": "One row per driver lap. Empty optional fields represent unknown values.",
+  "required_columns": [
+    "session_id",
+    "driver",
+    "lap_number",
+    "lap_time_s"
+  ],
+  "optional_columns": [
+    "sector1_s",
+    "sector2_s",
+    "sector3_s",
+    "compound",
+    "tyre_age_laps"
+  ],
+  "units": {
+    "lap_number": "lap",
+    "lap_time_s": "seconds",
+    "sector1_s": "seconds",
+    "sector2_s": "seconds",
+    "sector3_s": "seconds",
+    "tyre_age_laps": "laps"
+  }
+}
