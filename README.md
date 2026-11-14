@@ -12,7 +12,7 @@ The system is being built around five connected capabilities:
 - Simulate race scenarios, including safety-car periods and uncertain events.
 - Explain strategy recommendations with outcome distributions and assumptions.
 
-The first release will work with local historical or sample datasets. It will not claim to provide live team telemetry or official real-time strategy advice.
+The first release uses local historical or sample datasets. It does not provide live team telemetry or official real-time strategy advice.
 
 ## Architecture
 
@@ -23,11 +23,28 @@ The first release will work with local historical or sample datasets. It will no
 - **CMake / GoogleTest:** native engine build and tests.
 - **pytest:** Python tests.
 
-See [docs/architecture.md](docs/architecture.md) for the system boundaries, data flow and implementation sequence.
+See [docs/architecture.md](docs/architecture.md) for system boundaries, data flow and the implementation sequence.
 
-## Development status
+## Current status
 
-The repository currently contains the project license and initial documentation. Implementation will proceed in small, testable steps, starting with data contracts and telemetry ingestion.
+Phase 1 establishes the canonical session, lap and telemetry records, plus validated CSV lap ingestion and a small sample dataset. Strategy models, simulation, the API and frontend are not implemented yet.
+
+## Setup
+
+Requires Python 3.10 or newer.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+pytest
+```
+
+On Windows PowerShell, activate the environment with:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
 
 ## Data and attribution
 
