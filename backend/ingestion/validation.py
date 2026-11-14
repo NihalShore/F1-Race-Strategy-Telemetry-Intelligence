@@ -83,11 +83,14 @@ def validate_lap_rows(rows: Iterable[Mapping[str, object]]) -> list[LapRecord]:
     seen: set[tuple[str, str, int]] = set()
 
     for row_number, row in enumerate(rows, start=2):
-        if row is None or not any(_clean_value(value) for value in row.values()):
+        if row is None:
             continue
 
         if None in row:
             errors.append(f"row {row_number}: too many fields")
+            continue
+
+        if not any(_clean_value(value) for value in row.values()):
             continue
 
         session_id = _clean_value(row.get("session_id"))
