@@ -73,6 +73,17 @@ def test_extra_csv_fields_are_rejected(tmp_path):
         load_laps_csv(path)
 
 
+def test_empty_extra_csv_field_is_rejected(tmp_path):
+    path = tmp_path / "extra_empty.csv"
+    path.write_text(
+        "session_id,driver,lap_number,lap_time_s\\nr1,VER,1,84.2,\\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CsvValidationError, match="too many fields"):
+        load_laps_csv(path)
+
+
 def test_blank_rows_are_ignored(tmp_path):
     path = tmp_path / "blank.csv"
     path.write_text(
