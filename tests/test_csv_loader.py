@@ -92,3 +92,12 @@ def test_malformed_quoted_csv_is_rejected(tmp_path):
     with pytest.raises(CsvValidationError, match="could not parse CSV"):
         load_laps_csv(path)
 
+def test_malformed_quoted_header_is_rejected(tmp_path):
+    path = tmp_path / "malformed_header.csv"
+    path.write_text(
+        '"session_id,driver,lap_number,lap_time_s\nr1,VER,1,84.2\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CsvValidationError, match="could not parse CSV"):
+        load_laps_csv(path)
