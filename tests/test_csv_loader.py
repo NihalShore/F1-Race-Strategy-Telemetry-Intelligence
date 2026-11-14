@@ -81,3 +81,14 @@ def test_blank_rows_are_ignored(tmp_path):
     )
 
     assert len(load_laps_csv(path)) == 1
+
+def test_malformed_quoted_csv_is_rejected(tmp_path):
+    path = tmp_path / "malformed.csv"
+    path.write_text(
+        'session_id,driver,lap_number,lap_time_s\n"r1,VER,1,84.2\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CsvValidationError, match="could not parse CSV"):
+        load_laps_csv(path)
+
