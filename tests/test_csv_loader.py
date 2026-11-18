@@ -112,3 +112,35 @@ def test_malformed_quoted_header_is_rejected(tmp_path):
 
     with pytest.raises(CsvValidationError, match="could not parse CSV"):
         load_laps_csv(path)
+
+def test_empty_file_without_header_is_rejected(tmp_path):
+    path = tmp_path / "no_header.csv"
+    path.write_text("", encoding="utf-8")
+
+    with pytest.raises(CsvValidationError, match="no header"):
+        load_laps_csv(path)
+
+
+def test_missing_value_in_short_row_is_rejected(tmp_path):
+    path = tmp_path / "short_row.csv"
+    path.write_text(
+        "session_id,driver,lap_number,lap_time_s\nr1,VER,1\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CsvValidationError, match="lap_time_s is required"):
+        load_laps_csv(path)
+
+
+def test_utf8_bom_and_crlf_are_supported(tmp_path):
+    path = tmp_path / "bom.csv"
+    path.write_text(
+        "\ufeffsession_id,driver,lap_number,lap_time_s\r\nr1,VER,1,84.2\r\n",
+        encoding="utf-8",
+    )
+
+    laps = load_laps_csv(path)
+
+    assert len(laps) == 1
+    assert laps[0].session_id == "r1"
+    assert laps[0].driver == "VER"
