@@ -6,7 +6,17 @@ from collections.abc import Iterable, Mapping
 from backend.schemas import LapRecord
 
 
-REQUIRED_COLUMNS = {"session_id", "driver", "lap_number", "lap_time_s"}
+REQUIRED_COLUMNS = frozenset({"session_id", "driver", "lap_number", "lap_time_s"})
+OPTIONAL_COLUMNS = frozenset(
+    {
+        "sector1_s",
+        "sector2_s",
+        "sector3_s",
+        "compound",
+        "tyre_age_laps",
+    }
+)
+ALLOWED_COLUMNS = REQUIRED_COLUMNS | OPTIONAL_COLUMNS
 
 
 class CsvValidationError(ValueError):
@@ -61,18 +71,24 @@ def _parse_integer(
     minimum: int,
 ) -> int | None:
     if isinstance(value, bool):
-        errors.append(f"row {row_number}: {field} must be an integer of at least {minimum}")
+        errors.append(
+            f"row {row_number}: {field} must be an integer of at least {minimum}"
+        )
         return None
 
     cleaned = _clean_value(value)
     try:
         number = int(cleaned)
     except (TypeError, ValueError):
-        errors.append(f"row {row_number}: {field} must be an integer of at least {minimum}")
+        errors.append(
+            f"row {row_number}: {field} must be an integer of at least {minimum}"
+        )
         return None
 
     if number < minimum:
-        errors.append(f"row {row_number}: {field} must be an integer of at least {minimum}")
+        errors.append(
+            f"row {row_number}: {field} must be an integer of at least {minimum}"
+        )
         return None
     return number
 
@@ -88,6 +104,15 @@ def validate_lap_rows(rows: Iterable[Mapping[str, object]]) -> list[LapRecord]:
 
         if None in row:
             errors.append(f"row {row_number}: too many fields")
+            continue
+
+        unknown_columns = sorted(
+            str(column) for column in row if column not in ALLOWED_COLUMNS
+        )
+        if unknown_columns:
+            errors.append(
+                f"row {row_number}: unexpected columns: {', '.join(unknown_columns)}"
+            )
             continue
 
         if not any(_clean_value(value) for value in row.values()):
@@ -116,13 +141,17 @@ def validate_lap_rows(rows: Iterable[Mapping[str, object]]) -> list[LapRecord]:
             )
             for i in range(1, 4)
         ]
-        tyre_age = _parse_integer(
-            row.get("tyre_age_laps"),
-            "tyre_age_laps",
-            row_number,
-            errors,
-            minimum=0,
-        ) if _clean_value(row.get("tyre_age_laps")) else None
+        tyre_age = (
+            _parse_integer(
+                row.get("tyre_age_laps"),
+                "tyre_age_laps",
+                row_number,
+                errors,
+                minimum=0,
+            )
+            if _clean_value(row.get("tyre_age_laps"))
+            else None
+        )
 
         if session_id and driver and lap_number is not None:
             key = (session_id, driver, lap_number)
