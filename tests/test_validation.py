@@ -53,6 +53,14 @@ def test_invalid_values_are_rejected(field, value):
         validate_lap_rows([row])
 
 
+def test_unknown_columns_are_rejected():
+    row = valid_row()
+    row["fuel_load_kg"] = "50"
+
+    with pytest.raises(CsvValidationError, match="unexpected columns: fuel_load_kg"):
+        validate_lap_rows([row])
+
+
 def test_duplicate_laps_are_rejected():
     row = valid_row()
 

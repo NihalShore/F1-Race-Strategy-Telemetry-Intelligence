@@ -2,7 +2,12 @@ import csv
 from pathlib import Path
 
 from backend.schemas import LapRecord
-from .validation import REQUIRED_COLUMNS, CsvValidationError, validate_lap_rows
+from .validation import (
+    ALLOWED_COLUMNS,
+    REQUIRED_COLUMNS,
+    CsvValidationError,
+    validate_lap_rows,
+)
 
 
 def load_laps_csv(path: str | Path) -> list[LapRecord]:
@@ -25,11 +30,21 @@ def load_laps_csv(path: str | Path) -> list[LapRecord]:
 
             reader.fieldnames = fieldnames
             missing = sorted(REQUIRED_COLUMNS - set(fieldnames))
+            unexpected = sorted(set(fieldnames) - ALLOWED_COLUMNS)
+            header_errors = []
             if missing:
-                raise CsvValidationError(
-                    [f"missing required columns: {', '.join(missing)}"]
+                header_errors.append(
+                    f"missing required columns: {', '.join(missing)}"
                 )
+            if unexpected:
+                header_errors.append(
+                    f"unexpected columns: {', '.join(unexpected)}"
+                )
+            if header_errors:
+                raise CsvValidationError(header_errors)
 
             return validate_lap_rows(reader)
         except csv.Error as exc:
             raise CsvValidationError([f"could not parse CSV: {exc}"]) from exc
+        except UnicodeDecodeError as exc:
+            raise CsvValidationError(["CSV file must use UTF-8 encoding"]) from exc
