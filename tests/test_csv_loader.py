@@ -62,6 +62,28 @@ def test_invalid_headers_are_rejected(tmp_path, header):
         load_laps_csv(path)
 
 
+def test_unknown_header_columns_are_rejected(tmp_path):
+    path = tmp_path / "unknown_column.csv"
+    path.write_text(
+        "session_id,driver,lap_number,lap_time_s,fuel_load_kg\n"
+        "r1,VER,1,84.2,50\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(CsvValidationError, match="unexpected columns: fuel_load_kg"):
+        load_laps_csv(path)
+
+
+def test_invalid_utf8_is_reported_as_validation_error(tmp_path):
+    path = tmp_path / "invalid_encoding.csv"
+    path.write_bytes(
+        b"session_id,driver,lap_number,lap_time_s\nr1,VER,1,84.2,\xff\n"
+    )
+
+    with pytest.raises(CsvValidationError, match="must use UTF-8 encoding"):
+        load_laps_csv(path)
+
+
 def test_extra_csv_fields_are_rejected(tmp_path):
     path = tmp_path / "extra.csv"
     path.write_text(
@@ -93,6 +115,7 @@ def test_blank_rows_are_ignored(tmp_path):
 
     assert len(load_laps_csv(path)) == 1
 
+
 def test_malformed_quoted_csv_is_rejected(tmp_path):
     path = tmp_path / "malformed.csv"
     path.write_text(
@@ -103,6 +126,7 @@ def test_malformed_quoted_csv_is_rejected(tmp_path):
     with pytest.raises(CsvValidationError, match="could not parse CSV"):
         load_laps_csv(path)
 
+
 def test_malformed_quoted_header_is_rejected(tmp_path):
     path = tmp_path / "malformed_header.csv"
     path.write_text(
@@ -112,6 +136,7 @@ def test_malformed_quoted_header_is_rejected(tmp_path):
 
     with pytest.raises(CsvValidationError, match="could not parse CSV"):
         load_laps_csv(path)
+
 
 def test_empty_file_without_header_is_rejected(tmp_path):
     path = tmp_path / "no_header.csv"
