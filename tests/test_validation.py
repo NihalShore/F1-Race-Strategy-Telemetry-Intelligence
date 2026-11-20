@@ -87,3 +87,48 @@ def test_zero_tyre_age_is_valid():
     row["tyre_age_laps"] = "0"
 
     assert validate_lap_rows([row])[0].tyre_age_laps == 0
+
+
+def test_sector_times_must_match_lap_time():
+    row = valid_row()
+    row.update(
+        {
+            "lap_time_s": "84.2",
+            "sector1_s": "27.0",
+            "sector2_s": "31.1",
+            "sector3_s": "26.5",
+        }
+    )
+
+    with pytest.raises(CsvValidationError, match="does not match lap_time_s"):
+        validate_lap_rows([row])
+
+
+def test_sector_time_rounding_difference_is_allowed():
+    row = valid_row()
+    row.update(
+        {
+            "lap_time_s": "84.2",
+            "sector1_s": "27.1",
+            "sector2_s": "31.1",
+            "sector3_s": "26.05",
+        }
+    )
+
+    records = validate_lap_rows([row])
+
+    assert records[0].lap_time_s == 84.2
+
+
+def test_sector_consistency_is_not_checked_when_a_sector_is_missing():
+    row = valid_row()
+    row.update(
+        {
+            "lap_time_s": "84.2",
+            "sector1_s": "",
+            "sector2_s": "31.1",
+            "sector3_s": "26.5",
+        }
+    )
+
+    assert len(validate_lap_rows([row])) == 1
