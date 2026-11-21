@@ -17,6 +17,7 @@ OPTIONAL_COLUMNS = frozenset(
     }
 )
 ALLOWED_COLUMNS = REQUIRED_COLUMNS | OPTIONAL_COLUMNS
+SECTOR_TIME_TOLERANCE_S = 0.15
 
 
 class CsvValidationError(ValueError):
@@ -152,6 +153,24 @@ def validate_lap_rows(rows: Iterable[Mapping[str, object]]) -> list[LapRecord]:
             if _clean_value(row.get("tyre_age_laps"))
             else None
         )
+
+        if lap_time_s is not None and all(value is not None for value in sectors):
+            sector_total = sum(value for value in sectors if value is not None)
+            difference = abs(sector_total - lap_time_s)
+            if (
+                difference > SECTOR_TIME_TOLERANCE_S
+                and not math.isclose(
+                    difference,
+                    SECTOR_TIME_TOLERANCE_S,
+                    rel_tol=0.0,
+                    abs_tol=1e-9,
+                )
+            ):
+                errors.append(
+                    f"row {row_number}: sector times total {sector_total:.3f}s "
+                    f"does not match lap_time_s {lap_time_s:.3f}s "
+                    f"(tolerance {SECTOR_TIME_TOLERANCE_S:.2f}s)"
+                )
 
         if session_id and driver and lap_number is not None:
             key = (session_id, driver, lap_number)
