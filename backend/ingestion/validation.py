@@ -156,7 +156,16 @@ def validate_lap_rows(rows: Iterable[Mapping[str, object]]) -> list[LapRecord]:
 
         if lap_time_s is not None and all(value is not None for value in sectors):
             sector_total = sum(value for value in sectors if value is not None)
-            if abs(sector_total - lap_time_s) > SECTOR_TIME_TOLERANCE_S:
+            difference = abs(sector_total - lap_time_s)
+            if (
+                difference > SECTOR_TIME_TOLERANCE_S
+                and not math.isclose(
+                    difference,
+                    SECTOR_TIME_TOLERANCE_S,
+                    rel_tol=0.0,
+                    abs_tol=1e-9,
+                )
+            ):
                 errors.append(
                     f"row {row_number}: sector times total {sector_total:.3f}s "
                     f"does not match lap_time_s {lap_time_s:.3f}s "
