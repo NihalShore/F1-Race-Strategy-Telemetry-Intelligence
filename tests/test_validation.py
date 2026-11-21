@@ -104,6 +104,37 @@ def test_sector_times_must_match_lap_time():
         validate_lap_rows([row])
 
 
+def test_sector_time_difference_at_tolerance_is_allowed():
+    row = valid_row()
+    row.update(
+        {
+            "lap_time_s": "84.2",
+            "sector1_s": "27.0",
+            "sector2_s": "31.1",
+            "sector3_s": "26.25",
+        }
+    )
+
+    records = validate_lap_rows([row])
+
+    assert records[0].lap_time_s == 84.2
+
+
+def test_sector_time_difference_above_tolerance_is_rejected():
+    row = valid_row()
+    row.update(
+        {
+            "lap_time_s": "84.2",
+            "sector1_s": "27.0",
+            "sector2_s": "31.1",
+            "sector3_s": "26.251",
+        }
+    )
+
+    with pytest.raises(CsvValidationError, match="does not match lap_time_s"):
+        validate_lap_rows([row])
+
+
 def test_sector_time_rounding_difference_is_allowed():
     row = valid_row()
     row.update(
