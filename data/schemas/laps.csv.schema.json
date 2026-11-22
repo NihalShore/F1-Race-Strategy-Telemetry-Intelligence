@@ -1,24 +1,57 @@
 {
-  "description": "One row per driver lap. Empty optional fields represent unknown values.",
-  "required_columns": [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NihalShore/F1-Race-Strategy-Telemetry-Intelligence/blob/main/data/schemas/laps.csv.schema.json",
+  "title": "F1 lap record",
+  "description": "Canonical normalized lap record. Optional values may be null when the source CSV cell is empty.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
     "session_id",
     "driver",
     "lap_number",
     "lap_time_s"
   ],
-  "optional_columns": [
-    "sector1_s",
-    "sector2_s",
-    "sector3_s",
-    "compound",
-    "tyre_age_laps"
-  ],
-  "units": {
-    "lap_number": "lap",
-    "lap_time_s": "seconds",
-    "sector1_s": "seconds",
-    "sector2_s": "seconds",
-    "sector3_s": "seconds",
-    "tyre_age_laps": "laps"
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "driver": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lap_number": {
+      "type": "integer",
+      "minimum": 1,
+      "x-unit": "lap"
+    },
+    "lap_time_s": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "x-unit": "seconds"
+    },
+    "sector1_s": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0,
+      "x-unit": "seconds"
+    },
+    "sector2_s": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0,
+      "x-unit": "seconds"
+    },
+    "sector3_s": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0,
+      "x-unit": "seconds"
+    },
+    "compound": {
+      "type": ["string", "null"]
+    },
+    "tyre_age_laps": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "x-unit": "laps"
+    }
   }
 }
