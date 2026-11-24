@@ -14,11 +14,13 @@
   "properties": {
     "session_id": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "driver": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "lap_number": {
       "type": "integer",
@@ -46,7 +48,9 @@
       "x-unit": "seconds"
     },
     "compound": {
-      "type": ["string", "null"]
+      "type": ["string", "null"],
+      "minLength": 1,
+      "pattern": "\\S"
     },
     "tyre_age_laps": {
       "type": ["integer", "null"],
