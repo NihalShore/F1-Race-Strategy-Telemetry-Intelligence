@@ -12,7 +12,12 @@ from .validation import (
 
 def load_laps_csv(path: str | Path) -> list[LapRecord]:
     csv_path = Path(path)
-    with csv_path.open("r", newline="", encoding="utf-8-sig") as handle:
+    try:
+        handle = csv_path.open("r", newline="", encoding="utf-8-sig")
+    except OSError as exc:
+        raise CsvValidationError([f"could not read CSV file: {exc}"]) from exc
+
+    with handle:
         reader = csv.DictReader(handle, strict=True)
 
         try:

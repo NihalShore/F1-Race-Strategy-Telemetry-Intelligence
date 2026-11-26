@@ -169,3 +169,10 @@ def test_utf8_bom_and_crlf_are_supported(tmp_path):
     assert len(laps) == 1
     assert laps[0].session_id == "r1"
     assert laps[0].driver == "VER"
+
+
+def test_missing_file_is_reported_as_validation_error(tmp_path):
+    path = tmp_path / "missing.csv"
+
+    with pytest.raises(CsvValidationError, match="could not read CSV file"):
+        load_laps_csv(path)
